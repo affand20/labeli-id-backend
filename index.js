@@ -51,6 +51,10 @@ app.get('/kontribusi', (req,res) => {
     controller.getKontribusi(req,res,req.body.userId)
 })
 
+app.get('/dataset', (req,res) => {
+    controller.allData(req,res)
+})
+
 app.get('/labeli/dilabeli', (req,res) => {    
     controller.getLabeledData(req,res, req.body.ownerId, req.body.datasetId)
 })
@@ -59,4 +63,9 @@ app.post('/labeli/update', (req,res) => {
     // const data = JSON.parse(req.body.data)
     const data = req.body.data
     controller.updateLabel(req,res,data)
+})
+
+app.get('/dataset/download', (req,res) => {
+    console.log(req.query.datasetId)
+    controller.convertData(req,res,req.query.datasetId)
 })

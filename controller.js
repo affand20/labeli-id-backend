@@ -1,5 +1,7 @@
 const connect = require('./db/db')
 const response = require('./response')
+const jsonexport = require('jsonexport')
+const fs = require('fs')
 
 exports.allData = (req, res) => {
     connect.query('SELECT * FROM dataset', (err, rows, field) => {
@@ -90,3 +92,40 @@ exports.getLabeledData = (req,res, ownerId, datasetId) => {
         }
     })
 }
+
+exports.convertData = (req,res, datasetId) => {
+    connect.query("SELECT * FROM dataset WHERE dataset_id=?",
+    [ datasetId ],
+    (err,rows,fields) => {
+        if (err) {
+            console.log('error:', err)            
+        } else {
+            // response.ok(rows,res)
+            const path = `${datasetId}.csv`
+            // const jsonFile = fs.writeFileSync(`downloads/json/${datasetId}.json`, rows)
+            const jsonFile = fs.createWriteStream(`downloads/json/${datasetId}.json`)
+            
+            jsonFile.write(JSON.stringify(rows))
+
+            // jsonFile.on('end', () => {
+                console.log('wrote json file')
+                const readStream = fs.createReadStream(`downloads/json/${datasetId}.json`)
+                const writeStream = fs.createWriteStream(`downloads/${datasetId}.csv`)
+
+                const pipe = readStream.pipe(jsonexport()).pipe(writeStream)
+                // pipe.on('end', () => {
+                    // console.log('end')
+                    response.ok(path,res)
+                // })
+            // })            
+        }
+    })
+}
+
+
+// fs.writeFileSync(`downloads/${datasetId}.json`, JSON.stringify(rows, null, 2), (err) => {
+//     if (err) {
+//         console.log(err)
+//     }
+//     console.log('file saved!')
+// })
