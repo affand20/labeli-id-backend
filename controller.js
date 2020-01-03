@@ -110,12 +110,26 @@ exports.convertData = (req,res, datasetId) => {
             // jsonFile.on('end', () => {
                 console.log('wrote json file')
                 const readStream = fs.createReadStream(`downloads/json/${datasetId}.json`)
-                const writeStream = fs.createWriteStream(`downloads/${datasetId}.csv`)
+                const writeStream = readStream.pipe(jsonexport()).pipe(fs.createWriteStream(`downloads/${datasetId}.csv`))
 
-                const pipe = readStream.pipe(jsonexport()).pipe(writeStream)
+                writeStream.on('finish', () => {
+                    console.log('write csv finish')
+                    res.download(`downloads/${datasetId}.csv`,(err) => {
+                        if (err) {
+                            console.log(err)
+                        }
+                    })
+                })
+
+                // readStream.pipe(jsonexport()).pipe(fs.createWriteStream(`downloads/${datasetId}.csv`))
                 // pipe.on('end', () => {
                     // console.log('end')
-                    response.ok(path,res)
+                    // response.ok(path,res)
+                    // res.download(`downloads/${datasetId}.csv`,(err) => {
+                    //     if (err) {
+                    //         console.log(err)
+                    //     }
+                    // })
                 // })
             // })            
         }

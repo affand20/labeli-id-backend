@@ -69,3 +69,11 @@ app.get('/dataset/download', (req,res) => {
     console.log(req.query.datasetId)
     controller.convertData(req,res,req.query.datasetId)
 })
+
+// app.get('/tes', (req,res) => {
+//     res.download('downloads/NEpZ0lVFTuwS54bty6B2.csv', (err) => {
+//         if(err) console.log(err);
+//         console.log('berhasil');
+        
+//     })
+// })
